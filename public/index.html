@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Make My Outfit</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+  <meta name="theme-color" content="#111315" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icons/icon-192x192.png" alt="logo" />
+      <h1>Make My Outfit</h1>
+    </div>
+    <button id="installBtn" class="btn ghost" title="Install PWA">Install</button>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>1) Your Info</h2>
+      <div class="grid two">
+        <label>Full Name
+          <input id="fullName" type="text" placeholder="e.g., Jordan Rivera" />
+        </label>
+        <label>Email
+          <input id="email" type="email" placeholder="you@example.com" />
+        </label>
+      </div>
+
+      <details class="mt-2">
+        <summary><strong>Measurements</strong> (height required; others optional)</summary>
+        <div class="grid four mt-2">
+          <label>Height (cm)
+            <input id="heightCm" type="number" min="100" max="250" placeholder="170" />
+          </label>
+          <label>Chest (cm)
+            <input id="chestCm" type="number" min="50" max="200" placeholder="90" />
+          </label>
+          <label>Waist (cm)
+            <input id="waistCm" type="number" min="40" max="180" placeholder="70" />
+          </label>
+          <label>Hips (cm)
+            <input id="hipsCm" type="number" min="50" max="200" placeholder="96" />
+          </label>
+        </div>
+
+        <div class="mt-2">
+          <label>Upload full-body photo (optional, front-facing, minimal baggy clothes)
+            <input id="userPhoto" type="file" accept="image/*" />
+          </label>
+          <button id="estimateBtn" class="btn small" title="Estimate measurements from photo">Estimate from photo</button>
+          <small class="muted">Estimation uses height and your photo to approximate other measurements.</small>
+        </div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>2) Outfit Prompt</h2>
+      <textarea id="promptInput" rows="4" placeholder="Describe the outfit you want... (e.g., ‘A blue dress for a wedding’)"></textarea>
+      <div class="grid two mt-2">
+        <button id="generateBtn" class="btn primary">Generate Outfit</button>
+        <button id="reviseBtn" class="btn" disabled>Revise Last Image</button>
+      </div>
+      <label class="mt-2">Revision prompt (e.g., “make the hem shorter”, “add long sleeves”)
+        <input id="revisionInput" type="text" placeholder="Describe your edit..." />
+      </label>
+      <div class="mt-2">
+        <label class="checkbox">
+          <input type="checkbox" id="tryOnToggle" />
+          <span>Try it on me (merge with my uploaded photo)</span>
+        </label>
+      </div>
+      <details class="mt-2">
+        <summary>Advanced</summary>
+        <div class="grid two mt-2">
+          <label>Image width (px)<input id="imgW" type="number" min="256" max="2048" step="64" value="1024"/></label>
+          <label>Image height (px)<input id="imgH" type="number" min="256" max="2048" step="64" value="1024"/></label>
+        </div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Storage Settings</h2>
+      <p class="muted">Choose how generated outfits are delivered to an outfit maker.</p>
+      <div class="grid two">
+        <label class="checkbox">
+          <input type="checkbox" id="directUploadToggle" />
+          <span>Direct upload to my bucket (advanced)</span>
+        </label>
+        <label>Bucket name
+          <input id="clientBucketName" type="text" placeholder="make-my-outfit-outputs" />
+        </label>
+      </div>
+      <label class="mt-2">Signed URL Provider Endpoint (POST) — returns JSON: { signedUrl, publicUrl }
+        <input id="signedUrlProvider" type="url" placeholder="https://REGION-PROJECT.cloudfunctions.net/getSignedUrl" />
+      </label>
+      <small class="muted">If Direct upload is enabled, the app will request a signed URL from the provider and upload the generated image directly to your bucket.</small>
+    </section>
+
+    <section class="card">
+      <h2>3) Result</h2>
+      <div id="loading" class="hidden">Generating image…</div>
+      <div id="imageOutput" class="hidden">
+        <div class="grid two result-head">
+          <div>
+            <p class="muted">Outfit Number</p>
+            <h3 id="outfitId">—</h3>
+          </div>
+          <div class="right">
+            <a id="downloadLink" class="btn small" download="make-my-outfit.png">Download PNG</a>
+          </div>
+        </div>
+        <img id="generatedImage" class="preview" alt="Generated outfit" />
+      </div>
+      <div id="error" class="hidden error">
+        <strong>Oops!</strong>
+        <pre id="errorMessage"></pre>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="apiKeyDialog">
+    <form method="dialog">
+      <h3>Enter your Gemini API key</h3>
+      <p class="muted">Your key is stored locally in your browser and sent only to the Make My Outfit server proxy to call Google’s API.</p>
+      <input id="apiKeyInput" type="password" placeholder="AIza..." />
+      <menu>
+        <button id="saveApiKeyBtn" class="btn primary">Save</button>
+        <button id="cancelApiKeyBtn" class="btn">Cancel</button>
+      </menu>
+      <p class="muted"><a href="https://ai.google.dev/gemini-api/docs/image-generation" target="_blank" rel="noopener">Get an API key</a></p>
+    </form>
+  </dialog>
+
+  <footer class="footer">
+    <button id="apiKeyBtn" class="btn small">Set API Key</button>
+    <span class="muted">PWA ready • Offline caching enabled</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
